@@ -1,0 +1,27 @@
+{
+  "name": "SimpleNodeSetUp",
+  "version": "0.0.2",
+  "description": "Node",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jeevan",
+  "license": "ISC",
+  "engines": {
+    "node": "6.9.1"
+  },
+  "dependencies": {
+    "async": "2.1.4",
+    "bluebird": "3.4.6",
+    "body-parser": "^1.15.2",
+    "ejs": "^2.5.5",
+    "express": "4.14.0",
+    "install": "^0.8.2",
+    "lodash": "4.17.2",
+    "mongoose": "^4.7.1",
+    "npm": "^4.0.3",
+    "path": "^0.12.7"
+
+  }
+}
