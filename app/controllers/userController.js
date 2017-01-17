@@ -36,3 +36,4 @@ exports.update = function (req, res) {
         res.json(result);
     })
 };
+

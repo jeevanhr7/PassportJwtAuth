@@ -2,8 +2,10 @@
 const  mongoose =  require('mongoose'),
   app =  require('./config/express'),
   config =  require('./config/env');
+require('./app/controllers/publishController');
 // make bluebird default Promise for mongoose
-//Promise = require('bluebird'); 
+//Promise = require('bluebird');
+
 mongoose.Promise = require('bluebird');
 // connect to mongo db
 mongoose.connect(config.db, { server: { socketOptions: { keepAlive: 1 } } });
