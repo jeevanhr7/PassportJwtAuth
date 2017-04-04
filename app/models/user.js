@@ -1,20 +1,81 @@
+// Importing Node packages required for schema
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt-nodejs');
+const ROLE_MEMBER = require('../utils/constants').ROLE_MEMBER;
+const ROLE_CLIENT = require('../utils/constants').ROLE_CLIENT;
+const ROLE_OWNER = require('../utils/constants').ROLE_OWNER;
+const ROLE_ADMIN = require('../utils/constants').ROLE_ADMIN;
+
 const Schema = mongoose.Schema;
-const userSchema = new Schema({
-    name: {type: String},
-    description: {type: String},
-    active: {type: Boolean, default: true},
-    cratedDate:{type:Date,default:Date.now()}
+
+//= ===============================
+// User Schema
+//= ===============================
+const UserSchema = new Schema({
+        email: {
+            type: String,
+            lowercase: true,
+            unique: true,
+            required: true
+        },
+        password: {
+            type: String,
+            required: true
+        },
+        profile: {
+            firstName: { type: String },
+            lastName: { type: String }
+        },
+        role: {
+            type: String,
+            enum: [ROLE_MEMBER, ROLE_CLIENT, ROLE_OWNER, ROLE_ADMIN],
+            default: ROLE_MEMBER
+        },
+        stripe: {
+            customerId: { type: String },
+            subscriptionId: { type: String },
+            lastFour: { type: String },
+            plan: { type: String },
+            activeUntil: { type: Date }
+        },
+        resetPasswordToken: { type: String },
+        resetPasswordExpires: { type: Date }
+    },
+    {
+        timestamps: true
+    });
+
+//= ===============================
+// User ORM Methods
+//= ===============================
+
+// Pre-save of user to database, hash password if password is modified or new
+UserSchema.pre('save', function (next) {
+    const user = this,
+        SALT_FACTOR = 5;
+
+    if (!user.isModified('password')) return next();
+
+    bcrypt.genSalt(SALT_FACTOR, (err, salt) => {
+        if (err) return next(err);
+
+        bcrypt.hash(user.password, salt, null, (err, hash) => {
+            if (err) return next(err);
+            user.password = hash;
+            next();
+        });
+    });
 });
 
-/*userSchema.pre('save', function (next) {
-    // if (this.name && this.isNew) {
-    //     this.name = 'PR_' + this.name;
-    // }
-    if (this.creator && this.isNew) {
-        this.owner = this.creator
-    }
-    next();
-});*/
+// Method to compare password for login
+UserSchema.methods.comparePassword = function (candidatePassword, cb) {
+    console.log("Password is Coming here");
+    console.log(candidatePassword)
+    bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+        if (err) { return cb(err); }
 
-module.exports = mongoose.model('User', userSchema);
+        cb(null, isMatch);
+    });
+};
+
+module.exports = mongoose.model('User', UserSchema);

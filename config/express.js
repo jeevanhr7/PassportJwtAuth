@@ -2,16 +2,18 @@
 'use strict';
 const express = require('express'),
     bodyParser = require('body-parser'),
+    passport=require('passport'),
     routes = require('../app/routes'),
     path = require('path'),
     config = require('./env'),
     app = express();
 
 // Middleware to require login/auth
+
 app.use(bodyParser.json());  // jshint ignore:line
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
+app.use(passport.initialize());
 app.all('/*', function (req, res, next) {
     // CORS headers
     res.header("Access-Control-Allow-Origin", "*");
